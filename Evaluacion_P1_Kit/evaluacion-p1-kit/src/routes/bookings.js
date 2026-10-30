@@ -1,0 +1,10 @@
+const router=require('express').Router();
+const authenticateToken=require('../middlewares/auth');
+const authorizeBooking=require('../middlewares/authorizeBooking');
+const controller=require('../controllers/bookingController');
+router.use(authenticateToken);
+router.post('/',controller.create);
+router.get('/:id',authorizeBooking,controller.get);
+router.put('/:id',authorizeBooking,controller.update);
+router.delete('/:id',authorizeBooking,controller.remove);
+module.exports=router;

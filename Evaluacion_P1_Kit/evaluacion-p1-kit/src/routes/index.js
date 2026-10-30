@@ -1,9 +1,6 @@
-const { Router } = require("express");
-const authRouter = require("./auth");
-
-const router = Router();
-
-router.use("/auth", authRouter);
-// Monta aquí tus routers de los hitos 2, 3 y 4
-
-module.exports = router;
+const router=require('express').Router();
+router.use('/auth',require('./auth'));
+router.use('/admin',require('./admin'));
+router.use('/bookings',require('./bookings'));
+router.use('/users',require('./users'));
+module.exports=router;

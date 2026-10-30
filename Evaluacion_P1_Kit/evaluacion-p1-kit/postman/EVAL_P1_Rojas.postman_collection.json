@@ -1,0 +1,582 @@
+{
+  "name": "EVAL_P1_Rojas",
+  "info": {
+    "name": "EVAL_P1_Rojas",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Login ADMIN",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/auth/login",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"email\": \"paulo.galarza@example.com\", \"password\": \"admin123\"}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if(pm.response.code===200)pm.environment.set(\"adminToken\",pm.response.json().token);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Login USER (completar email y clave)",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/auth/login",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"email\": \"CAMBIAR_EMAIL_INSTITUCIONAL\", \"password\": \"CAMBIAR_PASSWORD\"}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if(pm.response.code===200){pm.environment.set(\"userToken\",pm.response.json().token);pm.environment.set(\"token\",pm.response.json().token);}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Registro",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/auth/register",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\": \"Usuario Prueba\", \"email\": \"usuario.prueba@example.com\", \"password\": \"claveSegura123\"}"
+        }
+      }
+    },
+    {
+      "name": "Registro inválido",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/auth/register",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\": \"Usuario\", \"email\": \"invalido\", \"password\": \"clave\"}"
+        }
+      }
+    },
+    {
+      "name": "Login incorrecto",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/auth/login",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"email\": \"inexistente@example.com\", \"password\": \"mala\"}"
+        }
+      }
+    },
+    {
+      "name": "Ruta protegida",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/auth/protected-route",
+        "header": [],
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{userToken}}",
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Ruta protegida sin token",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/auth/protected-route",
+        "header": []
+      }
+    },
+    {
+      "name": "Ruta protegida token incorrecto",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/auth/protected-route",
+        "header": [],
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "incorrecto",
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Crear horario ADMIN",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/admin/schedules",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"court\": \"Cancha de prueba\", \"startTime\": \"2026-11-12T14:00:00.000Z\", \"endTime\": \"2026-11-12T16:00:00.000Z\"}"
+        }
+      }
+    },
+    {
+      "name": "Crear horario sin token (401)",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/admin/schedules",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"court\": \"Cancha X\", \"startTime\": \"2026-11-12T14:00:00Z\", \"endTime\": \"2026-11-12T16:00:00Z\"}"
+        }
+      }
+    },
+    {
+      "name": "Crear horario USER (403)",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/admin/schedules",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{userToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"court\": \"Cancha X\", \"startTime\": \"2026-11-12T14:00:00Z\", \"endTime\": \"2026-11-12T16:00:00Z\"}"
+        }
+      }
+    },
+    {
+      "name": "Listar todas ADMIN",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/admin/bookings",
+        "header": [],
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminToken}}",
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Listar todas sin token (401)",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/admin/bookings",
+        "header": []
+      }
+    },
+    {
+      "name": "Listar todas USER (403)",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/admin/bookings",
+        "header": [],
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{userToken}}",
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Crear reserva (horario 1 ocupado: 400)",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/bookings",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{userToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"date\": \"2026-11-12\", \"scheduleId\": 1}"
+        }
+      }
+    },
+    {
+      "name": "Crear reserva (horario nuevo)",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/bookings",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{userToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"date\": \"2026-11-13\", \"scheduleId\": 1}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if(pm.response.code===201)pm.environment.set(\"bookingId\",pm.response.json().id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Crear reserva sin token (401)",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/bookings",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"date\": \"2026-11-13\", \"scheduleId\": 1}"
+        }
+      }
+    },
+    {
+      "name": "Ver propia",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/bookings/{{bookingId}}",
+        "header": [],
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{userToken}}",
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Ver no existente (404)",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/bookings/999999",
+        "header": [],
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminToken}}",
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Ver ajena (403; requiere reserva de otro USER)",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/bookings/{{bookingId}}",
+        "header": [],
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{otherUserToken}}",
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Modificar propia",
+      "request": {
+        "method": "PUT",
+        "url": "{{baseUrl}}/api/bookings/{{bookingId}}",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{userToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"date\": \"2026-11-14\", \"scheduleId\": 1}"
+        }
+      }
+    },
+    {
+      "name": "Modificar ocupada (400)",
+      "request": {
+        "method": "PUT",
+        "url": "{{baseUrl}}/api/bookings/{{bookingId}}",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{userToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"date\": \"2026-11-12\", \"scheduleId\": 1}"
+        }
+      }
+    },
+    {
+      "name": "Modificar inexistente (404)",
+      "request": {
+        "method": "PUT",
+        "url": "{{baseUrl}}/api/bookings/999999",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"date\": \"2026-11-14\", \"scheduleId\": 1}"
+        }
+      }
+    },
+    {
+      "name": "Eliminar propia (204)",
+      "request": {
+        "method": "DELETE",
+        "url": "{{baseUrl}}/api/bookings/{{bookingId}}",
+        "header": [],
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{userToken}}",
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Eliminar inexistente (404)",
+      "request": {
+        "method": "DELETE",
+        "url": "{{baseUrl}}/api/bookings/999999",
+        "header": [],
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminToken}}",
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Reservas de usuario",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/users/2/bookings",
+        "header": [],
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{userToken}}",
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Reservas ajenas (403; requiere otro USER)",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/users/2/bookings",
+        "header": [],
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{otherUserToken}}",
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Reservas usuario ADMIN",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/users/2/bookings",
+        "header": [],
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminToken}}",
+              "type": "string"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

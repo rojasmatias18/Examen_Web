@@ -1,15 +1,2 @@
-require("dotenv").config();
-const jwt = require("jsonwebtoken");
-
-function authenticateToken(req, res, next) {
-  const token = req.header("Authorization")?.split(" ")[1];
-  if (!token)
-    return res.status(401).json({ error: "Access Denied, no token provided" });
-  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-    if (err) return res.status(403).json({ error: "Invalid token" });
-    req.user = user;
-    next();
-  });
-}
-
-module.exports = authenticateToken;
+const jwt=require('jsonwebtoken');
+module.exports=(req,res,next)=>{const header=req.headers.authorization||'';const match=/^Bearer (.+)$/i.exec(header);if(!match)return res.status(401).json({status:'error',statusCode:401,message:'Access Denied, no token provided'});try{const payload=jwt.verify(match[1],process.env.JWT_SECRET);if(!Number.isSafeInteger(payload.id)||!['ADMIN','USER'].includes(payload.role))throw new Error('Malformed token');req.user=payload;next();}catch(e){res.status(403).json({status:'error',statusCode:403,message:'Invalid token'});}};
